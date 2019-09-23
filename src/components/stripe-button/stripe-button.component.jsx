@@ -6,8 +6,8 @@ const StripeCheckoutButton = ({ price }) => {
     const publishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY
 
     const onToken = token => {
-        console.log(token);
         //here goes logic for backend
+        //console.log(token);
     }
 
     return (
