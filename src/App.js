@@ -19,41 +19,56 @@ class App extends React.Component {
   
   unsubscribeFromAuth = null;
 
-  componentDidMount(){
+  componentDidMount() {
+    const { setCurrentUser } = this.props;
+
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
-      //this.setState({currentUser: user});
-      const {setCurrentUser} = this.props;
-      if(userAuth){
+      if (userAuth) {
         const userRef = await createUserProfileDocument(userAuth);
 
-        userRef.onSnapshot( snapShot => {
-            setCurrentUser({
-              currentUser: {
-                id: snapShot.id,
-                ...snapShot.data()
-              }
-            })
-        }) 
+        userRef.onSnapshot(snapShot => {
+          setCurrentUser({
+            id: snapShot.id,
+            ...snapShot.data()
+          });
+        });
       }
-      else{
-        setCurrentUser({currentUser: userAuth});
-      }
-    })
+
+      setCurrentUser(userAuth);
+    });
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     this.unsubscribeFromAuth();
   }
-  render(){
+
+  render() {
+    const { currentUser } = this.props;
     return (
       <div>
-        <Header/>
+        <Header />
         <Switch>
-          <Route exact path='/' component={HomePage} />
+          <Route exact path='/'
+            render={() =>
+              currentUser ? (
+              <HomePage />
+            ) : (
+              <Redirect to='/signin' />
+            )
+          }
+          />
           <Route path='/shop' component={ShopPage} />
           <Route exact path='/checkout' component={CheckoutPage} />
-          <Route exact path='/signin' 
-          render={() => this.props.currentUser ? (<Redirect to='/'/>) : (<SignInAndSignUpPage/>)} 
+          <Route
+            exact
+            path='/signin'
+            render={() =>
+                currentUser ? (
+                <Redirect to='/' />
+              ) : (
+                <SignInAndSignUpPage />
+              )
+            }
           />
         </Switch>
       </div>
