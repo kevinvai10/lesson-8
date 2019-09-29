@@ -7,6 +7,7 @@ import './collections-overview.styles.scss'
 import CollectionPreview from '../collection-preview/collection-preview.component'
 
 const CollectionsOverview = ({ collections }) => {
+    console.log('collections overview : ' , collections)
     return (
         <div className='collections-overview'>
             {collections.map(({ id, ...otherCollectionProps }) => (

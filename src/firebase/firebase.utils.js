@@ -1,6 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
+import { encode } from 'punycode';
 
 const config = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -53,6 +54,32 @@ export const addCollectionAndDocuments = async (collectionKey, objectsToAdd) => 
   })
 
   return await batch.commit()
+}
+
+//get whole snapshot
+export const convertCollectionsSnapshotToMap = (collections) => {
+  //transform doc object = array
+  const transfromedCollection = collections.docs.map(doc => {
+    const { title, items } = doc.data();
+
+    return { 
+      routeName: encodeURI(title.toLowerCase()),
+      id: doc.id,
+      title,
+      items
+    }
+  })
+  //return object with all the keys hats, jackets, etc.
+  /*
+    hats: {
+      ...items
+    }
+  */
+  return transfromedCollection.reduce((accum, collection) => {
+    accum[collection.title.toLowerCase()] = collection;
+    return accum;
+  }, {})
+  //return obj with routing properties
 }
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
